@@ -1,191 +1,876 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🩺 Tech Blue Pressure Care</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tech Blue Pressure Care v2</title>
+  <style>
+    :root{
+      --bg1:#06101d;
+      --bg2:#0b1830;
+      --panel:#0f1c33;
+      --panel2:#132544;
+      --line:#22456f;
+      --text:#eef6ff;
+      --muted:#9fc2ea;
+      --accent:#38bdf8;
+      --good:#16a34a;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --info:#2563eb;
+      --shadow:0 10px 30px rgba(0,0,0,.28);
+      --radius:18px;
+    }
 
-<style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#0b1220;
-  color:white;
-  text-align:center;
-}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:Arial,Helvetica,sans-serif;
+      color:var(--text);
+      background:linear-gradient(180deg,var(--bg1),var(--bg2) 55%,#071322);
+      min-height:100vh;
+    }
 
-.container{
-  max-width:500px;
-  margin:auto;
-  padding:20px;
-}
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:18px;
+    }
 
-h1{
-  color:#38bdf8;
-}
+    .hero{
+      background:linear-gradient(135deg,rgba(56,189,248,.15),rgba(37,99,235,.12));
+      border:1px solid rgba(56,189,248,.25);
+      border-radius:24px;
+      padding:20px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+    }
 
-input{
-  width:90%;
-  padding:18px;
-  margin:10px 0;
-  font-size:20px;
-  border-radius:10px;
-  border:none;
-  text-align:center;
-}
+    .hero h1{
+      margin:0 0 8px;
+      color:#7dd3fc;
+      font-size:clamp(28px,4vw,44px);
+    }
 
-button{
-  width:90%;
-  padding:18px;
-  margin:10px 0;
-  font-size:20px;
-  border-radius:10px;
-  border:none;
-  cursor:pointer;
-}
+    .hero p{
+      margin:0;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.5;
+    }
 
-.btn-send{ background:#2563eb; color:white; }
-.btn-clear{ background:#ef4444; color:white; }
+    .grid{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:18px;
+    }
 
-.result{
-  margin-top:20px;
-  padding:20px;
-  border-radius:10px;
-  font-size:22px;
-}
+    .card{
+      background:rgba(15,28,51,.96);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
 
-.good{ background:#16a34a; }
-.warn{ background:#f59e0b; }
-.bad{ background:#ef4444; }
+    .card h2{
+      margin:0 0 14px;
+      font-size:22px;
+      color:#dff3ff;
+    }
 
-.history{
-  margin-top:20px;
-  text-align:left;
-  font-size:14px;
-}
-</style>
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .row3{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:12px;
+    }
+
+    .field label{
+      display:block;
+      margin:0 0 8px;
+      color:var(--muted);
+      font-weight:700;
+      font-size:14px;
+    }
+
+    .field input,
+    .field select{
+      width:100%;
+      padding:16px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#091525;
+      color:var(--text);
+      font-size:20px;
+      outline:none;
+    }
+
+    .field input:focus,
+    .field select:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(56,189,248,.16);
+    }
+
+    .btns{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+    }
+
+    button{
+      border:none;
+      border-radius:14px;
+      padding:14px 16px;
+      font-size:16px;
+      font-weight:800;
+      cursor:pointer;
+      color:white;
+      box-shadow:var(--shadow);
+    }
+
+    .primary{background:linear-gradient(135deg,#0ea5e9,#2563eb)}
+    .green{background:linear-gradient(135deg,#15803d,#22c55e)}
+    .orange{background:linear-gradient(135deg,#d97706,#f59e0b)}
+    .red{background:linear-gradient(135deg,#dc2626,#ef4444)}
+    .gray{background:linear-gradient(135deg,#334155,#475569)}
+
+    .hospital{
+      margin-top:16px;
+      border-radius:20px;
+      padding:22px;
+      border:2px solid rgba(255,255,255,.08);
+      background:#0a1628;
+      text-align:center;
+      transition:.25s ease;
+    }
+
+    .hospital .badge{
+      display:inline-block;
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:14px;
+      font-weight:800;
+      margin-bottom:12px;
+      letter-spacing:.4px;
+    }
+
+    .hospital .reading{
+      font-size:clamp(30px,5vw,56px);
+      font-weight:900;
+      margin:8px 0;
+    }
+
+    .hospital .msg{
+      font-size:18px;
+      line-height:1.5;
+      color:#e5eefc;
+    }
+
+    .hospital.good{background:linear-gradient(180deg,rgba(22,163,74,.18),rgba(10,22,40,.98)); border-color:rgba(34,197,94,.42)}
+    .hospital.warn{background:linear-gradient(180deg,rgba(245,158,11,.18),rgba(10,22,40,.98)); border-color:rgba(245,158,11,.42)}
+    .hospital.bad{background:linear-gradient(180deg,rgba(239,68,68,.22),rgba(10,22,40,.98)); border-color:rgba(239,68,68,.42)}
+    .hospital.info{background:linear-gradient(180deg,rgba(37,99,235,.18),rgba(10,22,40,.98)); border-color:rgba(37,99,235,.42)}
+
+    .badge.good{background:rgba(34,197,94,.16);color:#86efac}
+    .badge.warn{background:rgba(245,158,11,.16);color:#fcd34d}
+    .badge.bad{background:rgba(239,68,68,.16);color:#fecaca}
+    .badge.info{background:rgba(56,189,248,.16);color:#7dd3fc}
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+
+    .stat{
+      background:#0a1628;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      text-align:center;
+    }
+
+    .stat .n{
+      font-size:26px;
+      font-weight:900;
+      color:#7dd3fc;
+      margin-bottom:5px;
+    }
+
+    .stat .t{
+      color:var(--muted);
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .chartWrap{
+      margin-top:16px;
+      background:#0a1628;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:12px;
+    }
+
+    canvas{
+      width:100%;
+      height:260px;
+      display:block;
+      background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
+      border-radius:12px;
+    }
+
+    .mini{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+      margin-top:10px;
+    }
+
+    .historyBox{
+      margin-top:18px;
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius:16px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:760px;
+      background:#0a1628;
+    }
+
+    th,td{
+      padding:12px 10px;
+      border-bottom:1px solid #183252;
+      text-align:center;
+      font-size:14px;
+    }
+
+    th{
+      position:sticky;
+      top:0;
+      background:#0d1a2f;
+      color:#dbeeff;
+      z-index:1;
+    }
+
+    tr:nth-child(even){background:rgba(255,255,255,.02)}
+
+    .pill{
+      display:inline-block;
+      padding:7px 10px;
+      border-radius:999px;
+      font-weight:800;
+      font-size:12px;
+    }
+
+    .pill.good{background:rgba(22,163,74,.16);color:#86efac}
+    .pill.warn{background:rgba(245,158,11,.16);color:#fcd34d}
+    .pill.bad{background:rgba(239,68,68,.16);color:#fecaca}
+    .pill.info{background:rgba(37,99,235,.16);color:#93c5fd}
+
+    .footerNote{
+      margin-top:16px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+    }
+
+    .symptoms{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .symptoms label{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      background:#0a1628;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      cursor:pointer;
+      font-size:14px;
+      color:#dbeafe;
+    }
+
+    .topTools{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      margin-bottom:12px;
+    }
+
+    @media (max-width:960px){
+      .grid{grid-template-columns:1fr}
+      .row,.row3,.stats,.symptoms{grid-template-columns:1fr}
+      .topTools{justify-content:flex-start}
+    }
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="topTools">
+        <button class="gray" onclick="toggleVoice()"><span id="voiceBtnText">🔊 Voz: ON</span></button>
+        <button class="gray" onclick="exportarJSON()">⬇️ Exportar JSON</button>
+      </div>
+      <h1>🩺 Tech Blue Pressure Care v2</h1>
+      <p>
+        Versión hospital: multiusuario, historial, gráfica, alertas grandes y voz.
+        Ideal para usar desde el celular con botones grandes.
+      </p>
+    </section>
 
-<div class="container">
+    <div class="grid">
+      <section class="card">
+        <h2>Registrar lectura</h2>
 
-<h1>🩺 Presión Familiar</h1>
-<p>Ingrese los valores del brazalete</p>
+        <div class="row">
+          <div class="field">
+            <label>Persona</label>
+            <select id="persona">
+              <option value="Mamá">Mamá</option>
+              <option value="Tía Gladys">Tía Gladys</option>
+              <option value="Otro familiar">Otro familiar</option>
+            </select>
+          </div>
 
-<input id="sys" type="number" placeholder="SYS (Presión Alta)">
-<input id="dia" type="number" placeholder="DIA (Presión Baja)">
-<input id="pul" type="number" placeholder="Pulso">
+          <div class="field">
+            <label>Edad</label>
+            <input id="edad" type="number" min="1" max="120" placeholder="Ej: 75">
+          </div>
+        </div>
 
-<button class="btn-send" onclick="procesar()">📊 Procesar Lectura</button>
-<button class="btn-clear" onclick="borrar()">🗑️ Borrar Historial</button>
+        <div class="row3">
+          <div class="field">
+            <label>SYS (Presión alta)</label>
+            <input id="sys" type="number" placeholder="Ej: 137">
+          </div>
+          <div class="field">
+            <label>DIA (Presión baja)</label>
+            <input id="dia" type="number" placeholder="Ej: 63">
+          </div>
+          <div class="field">
+            <label>Pulso</label>
+            <input id="pul" type="number" placeholder="Ej: 61">
+          </div>
+        </div>
 
-<div id="resultado" class="result"></div>
+        <div class="symptoms">
+          <label><input type="checkbox" value="Mareo" class="symptom"> Mareo</label>
+          <label><input type="checkbox" value="Dolor de cabeza" class="symptom"> Dolor de cabeza</label>
+          <label><input type="checkbox" value="Visión borrosa" class="symptom"> Visión borrosa</label>
+          <label><input type="checkbox" value="Sin síntomas" class="symptom symptom-none"> Sin síntomas</label>
+        </div>
 
-<button class="btn-send" onclick="enviarWhatsApp()">📲 Enviar a Julian</button>
+        <div class="btns">
+          <button class="primary" onclick="procesarLectura()">📊 Procesar lectura</button>
+          <button class="green" onclick="usarEjemploMama()">👵 Ejemplo Mamá</button>
+          <button class="orange" onclick="usarEjemploTia()">👵 Ejemplo Tía</button>
+          <button class="primary" onclick="enviarWhatsApp()">📲 Enviar a Julian</button>
+          <button class="red" onclick="borrarTodo()">🗑️ Borrar historial</button>
+        </div>
 
-<div class="history" id="historial"></div>
+        <div id="hospitalBox" class="hospital info">
+          <div id="estadoBadge" class="badge info">ESPERANDO DATOS</div>
+          <div id="readingText" class="reading">-- / -- / --</div>
+          <div id="messageText" class="msg">Ingrese los datos del brazalete para analizar la lectura.</div>
+        </div>
 
-</div>
+        <div class="stats">
+          <div class="stat">
+            <div id="avgSys" class="n">0</div>
+            <div class="t">Promedio SYS</div>
+          </div>
+          <div class="stat">
+            <div id="avgDia" class="n">0</div>
+            <div class="t">Promedio DIA</div>
+          </div>
+          <div class="stat">
+            <div id="avgPul" class="n">0</div>
+            <div class="t">Promedio Pulso</div>
+          </div>
+          <div class="stat">
+            <div id="countReads" class="n">0</div>
+            <div class="t">Lecturas</div>
+          </div>
+        </div>
 
-<script>
+        <div class="footerNote">
+          Esta app es de apoyo familiar. No reemplaza el criterio médico.
+          Si hay dolor de pecho, falta de aire, desmayo, confusión, debilidad fuerte
+          o una lectura muy alta repetida, buscar ayuda médica.
+        </div>
+      </section>
 
-let historial = JSON.parse(localStorage.getItem("presion_historial")) || [];
+      <section class="card">
+        <h2>Gráfica cardiología</h2>
 
-function clasificar(sys,dia,pul){
+        <div class="field">
+          <label>Ver gráfica de</label>
+          <select id="filtroPersona" onchange="renderTodo()">
+            <option value="TODOS">Todos</option>
+            <option value="Mamá">Mamá</option>
+            <option value="Tía Gladys">Tía Gladys</option>
+            <option value="Otro familiar">Otro familiar</option>
+          </select>
+        </div>
 
-  if(sys>150 || dia>90){
-    return ["🔴 ALERTA","bad","Presión alta, vigilar"];
-  }
+        <div class="chartWrap">
+          <canvas id="chart" width="900" height="260"></canvas>
+        </div>
 
-  if((sys>=130 && sys<=140) && (dia>=70 && dia<=85)){
-    return ["🟡 CONTROLADA","warn","Dentro de rango para su edad"];
-  }
-
-  if(sys<100 || dia<60){
-    return ["🟡 BAJA","warn","Presión un poco baja"];
-  }
-
-  return ["🟢 NORMAL","good","Todo en orden"];
-}
-
-function procesar(){
-
-  let sys = parseInt(document.getElementById("sys").value);
-  let dia = parseInt(document.getElementById("dia").value);
-  let pul = parseInt(document.getElementById("pul").value);
-
-  if(!sys || !dia || !pul){
-    alert("Completa todos los datos");
-    return;
-  }
-
-  let [estado,clase,mensaje] = clasificar(sys,dia,pul);
-
-  let resultado = document.getElementById("resultado");
-  resultado.className = "result " + clase;
-  resultado.innerHTML = `
-    ${estado}<br>
-    ${sys}/${dia} - Pulso ${pul}<br>
-    <small>${mensaje}</small>
-  `;
-
-  let registro = {
-    fecha:new Date().toLocaleString(),
-    sys,dia,pul,estado
-  };
-
-  historial.unshift(registro);
-  localStorage.setItem("presion_historial",JSON.stringify(historial));
-
-  mostrarHistorial();
-}
-
-function mostrarHistorial(){
-
-  let div = document.getElementById("historial");
-
-  if(historial.length==0){
-    div.innerHTML="Sin registros";
-    return;
-  }
-
-  div.innerHTML = "<h3>📜 Historial</h3>" +
-  historial.map(r=>`
-    <div>
-    ${r.fecha} → ${r.sys}/${r.dia} (${r.pul}) - ${r.estado}
+        <div class="mini">
+          La gráfica muestra las últimas lecturas guardadas.  
+          Línea 1: SYS · Línea 2: DIA · Línea 3: Pulso
+        </div>
+      </section>
     </div>
-  `).join("");
-}
 
-function borrar(){
-  if(confirm("Borrar todo?")){
-    historial=[];
-    localStorage.removeItem("presion_historial");
-    mostrarHistorial();
-    document.getElementById("resultado").innerHTML="";
-  }
-}
+    <section class="card" style="margin-top:18px">
+      <h2>Historial</h2>
+      <div class="historyBox">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Persona</th>
+              <th>Edad</th>
+              <th>SYS</th>
+              <th>DIA</th>
+              <th>Pulso</th>
+              <th>Síntomas</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tablaHistorial">
+            <tr><td colspan="9">Sin registros</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
 
-function enviarWhatsApp(){
+  <script>
+    const STORAGE_KEY = "techblue_pressure_care_v2";
+    let voiceEnabled = true;
 
-  if(historial.length==0){
-    alert("No hay datos");
-    return;
-  }
+    const symptomBoxes = () => Array.from(document.querySelectorAll(".symptom"));
+    const symptomNone = () => document.querySelector(".symptom-none");
 
-  let r = historial[0];
+    symptomBoxes().forEach(box => {
+      box.addEventListener("change", (e) => {
+        if (e.target.classList.contains("symptom-none") && e.target.checked) {
+          symptomBoxes().forEach(x => { if (x !== e.target) x.checked = false; });
+        } else if (!e.target.classList.contains("symptom-none") && e.target.checked) {
+          symptomNone().checked = false;
+        }
+      });
+    });
 
-  let mensaje = `Lectura:\nSYS: ${r.sys}\nDIA: ${r.dia}\nPulso: ${r.pul}\nEstado: ${r.estado}`;
+    function getData(){
+      try{
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      }catch(e){
+        return [];
+      }
+    }
 
-  let url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+    function setData(data){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
 
-  window.open(url,"_blank");
-}
+    function getSelectedSymptoms(){
+      return symptomBoxes().filter(b => b.checked).map(b => b.value);
+    }
 
-mostrarHistorial();
+    function beep(type){
+      try{
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
 
-</script>
+        if(type === "bad") osc.frequency.value = 280;
+        else if(type === "warn") osc.frequency.value = 520;
+        else osc.frequency.value = 700;
 
+        gain.gain.value = 0.03;
+        osc.start();
+
+        if(type === "bad"){
+          setTimeout(() => osc.stop(), 450);
+        }else{
+          setTimeout(() => osc.stop(), 180);
+        }
+      }catch(e){}
+    }
+
+    function speak(text){
+      if(!voiceEnabled) return;
+      if(!("speechSynthesis" in window)) return;
+
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "es-US";
+      utter.rate = 1;
+      utter.pitch = 1;
+      window.speechSynthesis.speak(utter);
+    }
+
+    function toggleVoice(){
+      voiceEnabled = !voiceEnabled;
+      document.getElementById("voiceBtnText").textContent = voiceEnabled ? "🔊 Voz: ON" : "🔇 Voz: OFF";
+    }
+
+    function clasificar(sys, dia, pul, sintomas){
+      const hasSymptoms = sintomas.length && !sintomas.includes("Sin síntomas");
+
+      if(sys >= 180 || dia >= 120){
+        return {
+          label:"🚨 URGENCIA",
+          cls:"bad",
+          msg:"Lectura extremadamente alta. Repetir en reposo y buscar atención médica.",
+          speak:"Atención. Lectura muy alta. Buscar ayuda médica."
+        };
+      }
+
+      if((sys >= 160 || dia >= 100) || (hasSymptoms && (sys >= 150 || dia >= 95))){
+        return {
+          label:"🔴 ALERTA",
+          cls:"bad",
+          msg:"Presión alta. Vigilar muy de cerca. Si se repite o hay síntomas, consultar médico.",
+          speak:"Alerta. La presión está alta. Vigilar y consultar si se repite."
+        };
+      }
+
+      if(pul < 50){
+        return {
+          label:"🟠 PULSO BAJO",
+          cls:"warn",
+          msg:"Pulso bajo. Si hay mareo, debilidad o desmayo, consultar médico.",
+          speak:"Pulso bajo. Vigilar síntomas."
+        };
+      }
+
+      if(sys < 95 || dia < 55){
+        return {
+          label:"🟠 PRESIÓN BAJA",
+          cls:"warn",
+          msg:"La presión está baja. Vigilar mareo, debilidad o malestar.",
+          speak:"La presión está baja. Vigilar síntomas."
+        };
+      }
+
+      if((sys >= 141 && sys <= 159) || (dia >= 86 && dia <= 99) || (pul >= 91 && pul <= 110)){
+        return {
+          label:"🟡 VIGILAR",
+          cls:"warn",
+          msg:"La lectura está un poco fuera del rango cómodo. Conviene repetir en reposo.",
+          speak:"Lectura para vigilar. Repetir en reposo."
+        };
+      }
+
+      if((sys >= 130 && sys <= 140) && (dia >= 60 && dia <= 85) && (pul >= 55 && pul <= 90)){
+        return {
+          label:"🟢 CONTROLADA",
+          cls:"good",
+          msg:"Lectura estable y razonable para una persona mayor con tratamiento.",
+          speak:"La lectura está controlada."
+        };
+      }
+
+      if((sys >= 100 && sys < 130) && (dia >= 55 && dia < 85) && (pul >= 55 && pul <= 90)){
+        return {
+          label:"🟢 NORMAL",
+          cls:"good",
+          msg:"Todo en orden. La lectura luce bien.",
+          speak:"La lectura está normal."
+        };
+      }
+
+      return {
+        label:"🔵 REVISAR",
+        cls:"info",
+        msg:"Lectura fuera del patrón habitual. Conviene observar el promedio.",
+        speak:"Lectura para revisar."
+      };
+    }
+
+    function setHospitalUI(result, sys, dia, pul){
+      const box = document.getElementById("hospitalBox");
+      const badge = document.getElementById("estadoBadge");
+      const reading = document.getElementById("readingText");
+      const msg = document.getElementById("messageText");
+
+      box.className = "hospital " + result.cls;
+      badge.className = "badge " + result.cls;
+      badge.textContent = result.label;
+      reading.textContent = `${sys} / ${dia} / ${pul}`;
+      msg.textContent = result.msg;
+    }
+
+    function procesarLectura(){
+      const persona = document.getElementById("persona").value;
+      const edad = Number(document.getElementById("edad").value || 0);
+      const sys = Number(document.getElementById("sys").value);
+      const dia = Number(document.getElementById("dia").value);
+      const pul = Number(document.getElementById("pul").value);
+      const sintomas = getSelectedSymptoms();
+
+      if(!persona || !sys || !dia || !pul){
+        alert("Completa persona, SYS, DIA y pulso.");
+        return;
+      }
+
+      const result = clasificar(sys, dia, pul, sintomas);
+      setHospitalUI(result, sys, dia, pul);
+
+      const record = {
+        id: Date.now(),
+        fechaISO: new Date().toISOString(),
+        fechaTexto: new Date().toLocaleString(),
+        persona,
+        edad,
+        sys,
+        dia,
+        pul,
+        sintomas: sintomas.join(", ") || "Sin síntomas",
+        estado: result.label,
+        cls: result.cls
+      };
+
+      const data = getData();
+      data.unshift(record);
+      setData(data);
+      renderTodo();
+
+      beep(result.cls);
+      speak(`${persona}. ${result.speak}. Sistólica ${sys}. Diastólica ${dia}. Pulso ${pul}.`);
+
+      document.getElementById("sys").value = "";
+      document.getElementById("dia").value = "";
+      document.getElementById("pul").value = "";
+      symptomBoxes().forEach(x => x.checked = false);
+    }
+
+    function getFilteredData(){
+      const filtro = document.getElementById("filtroPersona").value;
+      const data = getData();
+      if(filtro === "TODOS") return data;
+      return data.filter(x => x.persona === filtro);
+    }
+
+    function renderTabla(){
+      const tbody = document.getElementById("tablaHistorial");
+      const data = getFilteredData();
+
+      if(!data.length){
+        tbody.innerHTML = `<tr><td colspan="9">Sin registros</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data.map(r => `
+        <tr>
+          <td>${r.fechaTexto}</td>
+          <td>${r.persona}</td>
+          <td>${r.edad || "-"}</td>
+          <td>${r.sys}</td>
+          <td>${r.dia}</td>
+          <td>${r.pul}</td>
+          <td>${r.sintomas}</td>
+          <td><span class="pill ${r.cls}">${r.estado}</span></td>
+          <td><button class="red" style="padding:8px 10px;font-size:12px" onclick="eliminarRegistro(${r.id})">Eliminar</button></td>
+        </tr>
+      `).join("");
+    }
+
+    function eliminarRegistro(id){
+      const data = getData().filter(x => x.id !== id);
+      setData(data);
+      renderTodo();
+    }
+
+    function actualizarStats(){
+      const data = getFilteredData();
+      const avg = (arr, key) => arr.length ? (arr.reduce((a,b)=>a + Number(b[key] || 0),0) / arr.length).toFixed(1) : "0";
+
+      document.getElementById("avgSys").textContent = avg(data, "sys");
+      document.getElementById("avgDia").textContent = avg(data, "dia");
+      document.getElementById("avgPul").textContent = avg(data, "pul");
+      document.getElementById("countReads").textContent = data.length;
+    }
+
+    function drawChart(){
+      const canvas = document.getElementById("chart");
+      const ctx = canvas.getContext("2d");
+      const width = canvas.width;
+      const height = canvas.height;
+      const pad = 40;
+
+      ctx.clearRect(0,0,width,height);
+
+      const data = getFilteredData().slice(0,12).reverse();
+
+      ctx.fillStyle = "#0a1628";
+      ctx.fillRect(0,0,width,height);
+
+      ctx.strokeStyle = "rgba(255,255,255,.08)";
+      ctx.lineWidth = 1;
+
+      for(let i=0;i<5;i++){
+        const y = pad + ((height - pad*2)/4) * i;
+        ctx.beginPath();
+        ctx.moveTo(pad, y);
+        ctx.lineTo(width - pad, y);
+        ctx.stroke();
+      }
+
+      if(!data.length){
+        ctx.fillStyle = "#9fc2ea";
+        ctx.font = "16px Arial";
+        ctx.fillText("Sin datos para graficar", pad, height/2);
+        return;
+      }
+
+      const allValues = data.flatMap(d => [d.sys, d.dia, d.pul]);
+      const minVal = Math.max(30, Math.min(...allValues) - 10);
+      const maxVal = Math.min(220, Math.max(...allValues) + 10);
+
+      ctx.fillStyle = "#9fc2ea";
+      ctx.font = "12px Arial";
+      for(let i=0;i<5;i++){
+        const val = Math.round(maxVal - ((maxVal-minVal)/4)*i);
+        const y = pad + ((height - pad*2)/4)*i + 4;
+        ctx.fillText(val, 8, y);
+      }
+
+      const drawSeries = (key, label, color) => {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+
+        data.forEach((d, i) => {
+          const x = pad + (i * ((width - pad*2) / Math.max(1, data.length-1)));
+          const y = pad + ((maxVal - d[key]) / (maxVal - minVal)) * (height - pad*2);
+          if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+        });
+        ctx.stroke();
+
+        data.forEach((d, i) => {
+          const x = pad + (i * ((width - pad*2) / Math.max(1, data.length-1)));
+          const y = pad + ((maxVal - d[key]) / (maxVal - minVal)) * (height - pad*2);
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(x, y, 4, 0, Math.PI*2);
+          ctx.fill();
+        });
+
+        ctx.fillStyle = color;
+        ctx.font = "13px Arial";
+        ctx.fillText(label, width - pad - 110, 20 + (label === "SYS" ? 0 : label === "DIA" ? 18 : 36));
+      };
+
+      drawSeries("sys", "SYS", "#38bdf8");
+      drawSeries("dia", "DIA", "#f59e0b");
+      drawSeries("pul", "PULSO", "#22c55e");
+
+      ctx.fillStyle = "#9fc2ea";
+      ctx.font = "12px Arial";
+      data.forEach((d, i) => {
+        const x = pad + (i * ((width - pad*2) / Math.max(1, data.length-1)));
+        ctx.fillText(String(i+1), x-3, height-12);
+      });
+    }
+
+    function enviarWhatsApp(){
+      const data = getData();
+      if(!data.length){
+        alert("No hay lecturas guardadas.");
+        return;
+      }
+
+      const last = data[0];
+      const text =
+`Lectura de presión
+Persona: ${last.persona}
+Edad: ${last.edad || "-"}
+SYS: ${last.sys}
+DIA: ${last.dia}
+Pulso: ${last.pul}
+Síntomas: ${last.sintomas}
+Estado: ${last.estado}
+Fecha: ${last.fechaTexto}`;
+
+      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(url, "_blank");
+    }
+
+    function exportarJSON(){
+      const data = getData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "techblue-pressure-care-data.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function borrarTodo(){
+      if(!confirm("¿Seguro que quieres borrar todo el historial?")) return;
+      localStorage.removeItem(STORAGE_KEY);
+      renderTodo();
+
+      const result = {
+        label:"ESPERANDO DATOS",
+        cls:"info",
+        msg:"Ingrese los datos del brazalete para analizar la lectura."
+      };
+      setHospitalUI(result, "--", "--", "--");
+    }
+
+    function usarEjemploMama(){
+      document.getElementById("persona").value = "Mamá";
+      document.getElementById("edad").value = "75";
+      document.getElementById("sys").value = "137";
+      document.getElementById("dia").value = "63";
+      document.getElementById("pul").value = "61";
+      symptomBoxes().forEach(x => x.checked = false);
+      symptomNone().checked = true;
+    }
+
+    function usarEjemploTia(){
+      document.getElementById("persona").value = "Tía Gladys";
+      document.getElementById("edad").value = "78";
+      document.getElementById("sys").value = "122";
+      document.getElementById("dia").value = "62";
+      document.getElementById("pul").value = "56";
+      symptomBoxes().forEach(x => x.checked = false);
+      symptomNone().checked = true;
+    }
+
+    function renderTodo(){
+      renderTabla();
+      actualizarStats();
+      drawChart();
+    }
+
+    renderTodo();
+  </script>
 </body>
 </html>
