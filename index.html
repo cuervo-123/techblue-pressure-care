@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🩺 Tech Blue Pressure Care</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0b1220;
+  color:white;
+  text-align:center;
+}
+
+.container{
+  max-width:500px;
+  margin:auto;
+  padding:20px;
+}
+
+h1{
+  color:#38bdf8;
+}
+
+input{
+  width:90%;
+  padding:18px;
+  margin:10px 0;
+  font-size:20px;
+  border-radius:10px;
+  border:none;
+  text-align:center;
+}
+
+button{
+  width:90%;
+  padding:18px;
+  margin:10px 0;
+  font-size:20px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+}
+
+.btn-send{ background:#2563eb; color:white; }
+.btn-clear{ background:#ef4444; color:white; }
+
+.result{
+  margin-top:20px;
+  padding:20px;
+  border-radius:10px;
+  font-size:22px;
+}
+
+.good{ background:#16a34a; }
+.warn{ background:#f59e0b; }
+.bad{ background:#ef4444; }
+
+.history{
+  margin-top:20px;
+  text-align:left;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🩺 Presión Familiar</h1>
+<p>Ingrese los valores del brazalete</p>
+
+<input id="sys" type="number" placeholder="SYS (Presión Alta)">
+<input id="dia" type="number" placeholder="DIA (Presión Baja)">
+<input id="pul" type="number" placeholder="Pulso">
+
+<button class="btn-send" onclick="procesar()">📊 Procesar Lectura</button>
+<button class="btn-clear" onclick="borrar()">🗑️ Borrar Historial</button>
+
+<div id="resultado" class="result"></div>
+
+<button class="btn-send" onclick="enviarWhatsApp()">📲 Enviar a Julian</button>
+
+<div class="history" id="historial"></div>
+
+</div>
+
+<script>
+
+let historial = JSON.parse(localStorage.getItem("presion_historial")) || [];
+
+function clasificar(sys,dia,pul){
+
+  if(sys>150 || dia>90){
+    return ["🔴 ALERTA","bad","Presión alta, vigilar"];
+  }
+
+  if((sys>=130 && sys<=140) && (dia>=70 && dia<=85)){
+    return ["🟡 CONTROLADA","warn","Dentro de rango para su edad"];
+  }
+
+  if(sys<100 || dia<60){
+    return ["🟡 BAJA","warn","Presión un poco baja"];
+  }
+
+  return ["🟢 NORMAL","good","Todo en orden"];
+}
+
+function procesar(){
+
+  let sys = parseInt(document.getElementById("sys").value);
+  let dia = parseInt(document.getElementById("dia").value);
+  let pul = parseInt(document.getElementById("pul").value);
+
+  if(!sys || !dia || !pul){
+    alert("Completa todos los datos");
+    return;
+  }
+
+  let [estado,clase,mensaje] = clasificar(sys,dia,pul);
+
+  let resultado = document.getElementById("resultado");
+  resultado.className = "result " + clase;
+  resultado.innerHTML = `
+    ${estado}<br>
+    ${sys}/${dia} - Pulso ${pul}<br>
+    <small>${mensaje}</small>
+  `;
+
+  let registro = {
+    fecha:new Date().toLocaleString(),
+    sys,dia,pul,estado
+  };
+
+  historial.unshift(registro);
+  localStorage.setItem("presion_historial",JSON.stringify(historial));
+
+  mostrarHistorial();
+}
+
+function mostrarHistorial(){
+
+  let div = document.getElementById("historial");
+
+  if(historial.length==0){
+    div.innerHTML="Sin registros";
+    return;
+  }
+
+  div.innerHTML = "<h3>📜 Historial</h3>" +
+  historial.map(r=>`
+    <div>
+    ${r.fecha} → ${r.sys}/${r.dia} (${r.pul}) - ${r.estado}
+    </div>
+  `).join("");
+}
+
+function borrar(){
+  if(confirm("Borrar todo?")){
+    historial=[];
+    localStorage.removeItem("presion_historial");
+    mostrarHistorial();
+    document.getElementById("resultado").innerHTML="";
+  }
+}
+
+function enviarWhatsApp(){
+
+  if(historial.length==0){
+    alert("No hay datos");
+    return;
+  }
+
+  let r = historial[0];
+
+  let mensaje = `Lectura:\nSYS: ${r.sys}\nDIA: ${r.dia}\nPulso: ${r.pul}\nEstado: ${r.estado}`;
+
+  let url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+
+  window.open(url,"_blank");
+}
+
+mostrarHistorial();
+
+</script>
+
+</body>
+</html>
