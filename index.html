@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tech Blue Pressure Care v2</title>
+  <title>Tech Blue Pressure Care v2 Secure Ultra</title>
   <style>
     :root{
       --bg1:#06101d;
@@ -32,7 +32,7 @@
     }
 
     .wrap{
-      max-width:1200px;
+      max-width:1280px;
       margin:0 auto;
       padding:18px;
     }
@@ -61,7 +61,7 @@
 
     .grid{
       display:grid;
-      grid-template-columns:1.1fr .9fr;
+      grid-template-columns:1.15fr .85fr;
       gap:18px;
     }
 
@@ -140,6 +140,7 @@
     .orange{background:linear-gradient(135deg,#d97706,#f59e0b)}
     .red{background:linear-gradient(135deg,#dc2626,#ef4444)}
     .gray{background:linear-gradient(135deg,#334155,#475569)}
+    .violet{background:linear-gradient(135deg,#6d28d9,#8b5cf6)}
 
     .hospital{
       margin-top:16px;
@@ -221,7 +222,7 @@
 
     canvas{
       width:100%;
-      height:260px;
+      height:300px;
       display:block;
       background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
       border-radius:12px;
@@ -244,7 +245,7 @@
     table{
       width:100%;
       border-collapse:collapse;
-      min-width:760px;
+      min-width:860px;
       background:#0a1628;
     }
 
@@ -313,25 +314,178 @@
       margin-bottom:12px;
     }
 
+    .aiBox{
+      margin-top:16px;
+      padding:16px;
+      border-radius:16px;
+      background:#091524;
+      border:1px solid var(--line);
+    }
+
+    .aiBox h3{
+      margin:0 0 8px;
+      color:#7dd3fc;
+      font-size:18px;
+    }
+
+    .aiLine{
+      color:#dbeafe;
+      margin:8px 0;
+      line-height:1.5;
+      font-size:15px;
+    }
+
+    .securityOverlay{
+      position:fixed;
+      inset:0;
+      background:rgba(2,8,23,.9);
+      backdrop-filter:blur(8px);
+      z-index:9999;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .securityCard{
+      width:min(520px,100%);
+      background:rgba(15,28,51,.98);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:22px;
+      box-shadow:var(--shadow);
+    }
+
+    .securityCard h2{
+      margin:0 0 10px;
+      color:#7dd3fc;
+      font-size:28px;
+    }
+
+    .securityCard p{
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .securityCard input{
+      width:100%;
+      padding:16px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#091525;
+      color:var(--text);
+      font-size:18px;
+      margin-top:10px;
+    }
+
+    .securityActions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .statusStrip{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .stripCard{
+      background:#0a1628;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+
+    .stripCard b{
+      display:block;
+      color:#7dd3fc;
+      margin-bottom:6px;
+    }
+
+    .notice{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:12px;
+      background:rgba(37,99,235,.14);
+      border:1px solid rgba(56,189,248,.3);
+      color:#dbeafe;
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .hidden{display:none!important}
+
     @media (max-width:960px){
       .grid{grid-template-columns:1fr}
-      .row,.row3,.stats,.symptoms{grid-template-columns:1fr}
+      .row,.row3,.stats,.symptoms,.statusStrip,.securityActions{grid-template-columns:1fr}
       .topTools{justify-content:flex-start}
     }
   </style>
 </head>
 <body>
+  <div id="securityOverlay" class="securityOverlay">
+    <div class="securityCard">
+      <h2 id="securityTitle">🔐 Seguridad</h2>
+      <p id="securityText">Configura el acceso seguro de la app.</p>
+
+      <div id="setupBox">
+        <input id="ownerName" type="text" placeholder="Nombre del responsable (ej: Julian)">
+        <input id="pin1" type="password" inputmode="numeric" placeholder="Crear PIN de 4 a 8 dígitos">
+        <input id="pin2" type="password" inputmode="numeric" placeholder="Confirmar PIN">
+        <div class="securityActions">
+          <button class="primary" onclick="crearSeguridad()">Crear acceso</button>
+          <button class="gray" onclick="demoSeguridad()">Demo rápida</button>
+        </div>
+      </div>
+
+      <div id="unlockBox" class="hidden">
+        <input id="unlockName" type="text" placeholder="Responsable" readonly>
+        <input id="unlockPin" type="password" inputmode="numeric" placeholder="Ingrese PIN">
+        <div class="securityActions">
+          <button class="primary" onclick="desbloquear()">Entrar</button>
+          <button class="orange" onclick="cambiarPin()">Cambiar PIN</button>
+        </div>
+      </div>
+
+      <div class="notice">
+        Esta seguridad protege el acceso local de la app.  
+        La sincronización real entre teléfonos necesita backend; esta versión queda preparada para eso.
+      </div>
+    </div>
+  </div>
+
   <div class="wrap">
     <section class="hero">
       <div class="topTools">
         <button class="gray" onclick="toggleVoice()"><span id="voiceBtnText">🔊 Voz: ON</span></button>
+        <button class="gray" onclick="pedirNotificaciones()"><span id="notifyBtnText">🔔 Notificaciones</span></button>
+        <button class="gray" onclick="toggleLock()">🔐 Bloquear</button>
         <button class="gray" onclick="exportarJSON()">⬇️ Exportar JSON</button>
+        <button class="gray" onclick="importarJSON()">⬆️ Importar JSON</button>
       </div>
-      <h1>🩺 Tech Blue Pressure Care v2</h1>
+      <h1>🩺 Tech Blue Pressure Care v2 Secure Ultra</h1>
       <p>
-        Versión hospital: multiusuario, historial, gráfica, alertas grandes y voz.
-        Ideal para usar desde el celular con botones grandes.
+        Base estable V2 + seguridad local + IA de patrones + notificaciones del navegador +
+        gráfica tipo hospital real. Lista para móvil.
       </p>
+
+      <div class="statusStrip">
+        <div class="stripCard">
+          <b>Responsable</b>
+          <span id="ownerLabel">-</span>
+        </div>
+        <div class="stripCard">
+          <b>Sync local</b>
+          <span id="syncLabel">Activo entre pestañas</span>
+        </div>
+        <div class="stripCard">
+          <b>Cloud</b>
+          <span id="cloudLabel">Pendiente backend</span>
+        </div>
+      </div>
     </section>
 
     <div class="grid">
@@ -380,7 +534,7 @@
           <button class="primary" onclick="procesarLectura()">📊 Procesar lectura</button>
           <button class="green" onclick="usarEjemploMama()">👵 Ejemplo Mamá</button>
           <button class="orange" onclick="usarEjemploTia()">👵 Ejemplo Tía</button>
-          <button class="primary" onclick="enviarWhatsApp()">📲 Enviar a Julian</button>
+          <button class="violet" onclick="notificarUltimaLectura()">📲 Notificar lectura</button>
           <button class="red" onclick="borrarTodo()">🗑️ Borrar historial</button>
         </div>
 
@@ -409,6 +563,13 @@
           </div>
         </div>
 
+        <div class="aiBox">
+          <h3>🤖 Doctor AI Familiar</h3>
+          <div id="aiSummary" class="aiLine">Aún no hay suficientes lecturas para detectar patrones.</div>
+          <div id="aiTrend" class="aiLine">Tendencia: pendiente.</div>
+          <div id="aiRisk" class="aiLine">Riesgo actual: pendiente.</div>
+        </div>
+
         <div class="footerNote">
           Esta app es de apoyo familiar. No reemplaza el criterio médico.
           Si hay dolor de pecho, falta de aire, desmayo, confusión, debilidad fuerte
@@ -417,25 +578,39 @@
       </section>
 
       <section class="card">
-        <h2>Gráfica cardiología</h2>
+        <h2>Gráfica hospital real</h2>
 
-        <div class="field">
-          <label>Ver gráfica de</label>
-          <select id="filtroPersona" onchange="renderTodo()">
-            <option value="TODOS">Todos</option>
-            <option value="Mamá">Mamá</option>
-            <option value="Tía Gladys">Tía Gladys</option>
-            <option value="Otro familiar">Otro familiar</option>
-          </select>
+        <div class="row">
+          <div class="field">
+            <label>Ver gráfica de</label>
+            <select id="filtroPersona" onchange="renderTodo()">
+              <option value="TODOS">Todos</option>
+              <option value="Mamá">Mamá</option>
+              <option value="Tía Gladys">Tía Gladys</option>
+              <option value="Otro familiar">Otro familiar</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Últimas lecturas</label>
+            <select id="limitGraph" onchange="renderTodo()">
+              <option value="12">12</option>
+              <option value="20">20</option>
+              <option value="30">30</option>
+            </select>
+          </div>
         </div>
 
         <div class="chartWrap">
-          <canvas id="chart" width="900" height="260"></canvas>
+          <canvas id="chart" width="960" height="300"></canvas>
         </div>
 
         <div class="mini">
-          La gráfica muestra las últimas lecturas guardadas.  
-          Línea 1: SYS · Línea 2: DIA · Línea 3: Pulso
+          Bandas visuales:
+          verde = estable,
+          amarillo = vigilar,
+          rojo = alerta.
+          Líneas: SYS, DIA y Pulso.
         </div>
       </section>
     </div>
@@ -466,8 +641,13 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "techblue_pressure_care_v2";
+    const STORAGE_KEY = "techblue_pressure_care_v2_secure_ultra_data";
+    const SECURITY_KEY = "techblue_pressure_care_v2_secure_ultra_security";
+    const SESSION_KEY = "techblue_pressure_care_v2_secure_ultra_session";
+    const CHANNEL_NAME = "tbpc_live_sync_channel_v2_ultra";
+
     let voiceEnabled = true;
+    let channel = null;
 
     const symptomBoxes = () => Array.from(document.querySelectorAll(".symptom"));
     const symptomNone = () => document.querySelector(".symptom-none");
@@ -482,6 +662,156 @@
       });
     });
 
+    function hashPin(pin){
+      let hash = 0;
+      for(let i = 0; i < pin.length; i++){
+        hash = ((hash << 5) - hash) + pin.charCodeAt(i);
+        hash |= 0;
+      }
+      return String(hash);
+    }
+
+    function getSecurity(){
+      try{
+        return JSON.parse(localStorage.getItem(SECURITY_KEY)) || null;
+      }catch(e){
+        return null;
+      }
+    }
+
+    function setSecurity(data){
+      localStorage.setItem(SECURITY_KEY, JSON.stringify(data));
+    }
+
+    function getSession(){
+      return localStorage.getItem(SESSION_KEY) === "1";
+    }
+
+    function setSession(value){
+      localStorage.setItem(SESSION_KEY, value ? "1" : "0");
+    }
+
+    function initSecurity(){
+      const sec = getSecurity();
+      const overlay = document.getElementById("securityOverlay");
+      const setupBox = document.getElementById("setupBox");
+      const unlockBox = document.getElementById("unlockBox");
+
+      if(!sec){
+        document.getElementById("securityTitle").textContent = "🔐 Crear acceso";
+        document.getElementById("securityText").textContent = "Crea un nombre y un PIN para proteger la app.";
+        setupBox.classList.remove("hidden");
+        unlockBox.classList.add("hidden");
+        overlay.classList.remove("hidden");
+        return;
+      }
+
+      document.getElementById("ownerLabel").textContent = sec.owner;
+      document.getElementById("unlockName").value = sec.owner;
+      setupBox.classList.add("hidden");
+      unlockBox.classList.remove("hidden");
+
+      if(getSession()){
+        overlay.classList.add("hidden");
+      }else{
+        document.getElementById("securityTitle").textContent = "🔓 Desbloquear";
+        document.getElementById("securityText").textContent = "Ingrese el PIN para entrar.";
+        overlay.classList.remove("hidden");
+      }
+    }
+
+    function crearSeguridad(){
+      const owner = document.getElementById("ownerName").value.trim();
+      const pin1 = document.getElementById("pin1").value.trim();
+      const pin2 = document.getElementById("pin2").value.trim();
+
+      if(!owner){
+        alert("Escribe el nombre del responsable.");
+        return;
+      }
+
+      if(!/^[0-9]{4,8}$/.test(pin1)){
+        alert("El PIN debe tener entre 4 y 8 dígitos.");
+        return;
+      }
+
+      if(pin1 !== pin2){
+        alert("Los PIN no coinciden.");
+        return;
+      }
+
+      setSecurity({
+        owner,
+        pinHash: hashPin(pin1),
+        createdAt: new Date().toISOString()
+      });
+
+      setSession(true);
+      document.getElementById("ownerLabel").textContent = owner;
+      document.getElementById("securityOverlay").classList.add("hidden");
+      initSecurity();
+    }
+
+    function demoSeguridad(){
+      document.getElementById("ownerName").value = "Julian";
+      document.getElementById("pin1").value = "1234";
+      document.getElementById("pin2").value = "1234";
+    }
+
+    function desbloquear(){
+      const sec = getSecurity();
+      if(!sec) return;
+
+      const pin = document.getElementById("unlockPin").value.trim();
+      if(hashPin(pin) !== sec.pinHash){
+        alert("PIN incorrecto.");
+        return;
+      }
+
+      setSession(true);
+      document.getElementById("securityOverlay").classList.add("hidden");
+      document.getElementById("unlockPin").value = "";
+    }
+
+    function toggleLock(){
+      setSession(false);
+      document.getElementById("securityOverlay").classList.remove("hidden");
+      initSecurity();
+    }
+
+    function cambiarPin(){
+      const sec = getSecurity();
+      if(!sec) return;
+
+      const actual = prompt("PIN actual:");
+      if(actual === null) return;
+
+      if(hashPin(actual.trim()) !== sec.pinHash){
+        alert("PIN actual incorrecto.");
+        return;
+      }
+
+      const nuevo = prompt("Nuevo PIN (4 a 8 dígitos):");
+      if(nuevo === null) return;
+
+      if(!/^[0-9]{4,8}$/.test(nuevo.trim())){
+        alert("PIN inválido.");
+        return;
+      }
+
+      const confirmar = prompt("Confirmar nuevo PIN:");
+      if(confirmar === null) return;
+
+      if(nuevo.trim() !== confirmar.trim()){
+        alert("Los PIN no coinciden.");
+        return;
+      }
+
+      sec.pinHash = hashPin(nuevo.trim());
+      setSecurity(sec);
+      alert("PIN actualizado.");
+    }
+
     function getData(){
       try{
         return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -490,8 +820,9 @@
       }
     }
 
-    function setData(data){
+    function setData(data, emit = true){
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      if(emit) emitSync(data);
     }
 
     function getSelectedSymptoms(){
@@ -513,18 +844,14 @@
         gain.gain.value = 0.03;
         osc.start();
 
-        if(type === "bad"){
-          setTimeout(() => osc.stop(), 450);
-        }else{
-          setTimeout(() => osc.stop(), 180);
-        }
+        if(type === "bad") setTimeout(() => osc.stop(), 450);
+        else setTimeout(() => osc.stop(), 180);
       }catch(e){}
     }
 
     function speak(text){
       if(!voiceEnabled) return;
       if(!("speechSynthesis" in window)) return;
-
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = "es-US";
@@ -538,6 +865,24 @@
       document.getElementById("voiceBtnText").textContent = voiceEnabled ? "🔊 Voz: ON" : "🔇 Voz: OFF";
     }
 
+    async function pedirNotificaciones(){
+      if(!("Notification" in window)){
+        alert("Este navegador no soporta notificaciones.");
+        return;
+      }
+      const permission = await Notification.requestPermission();
+      document.getElementById("notifyBtnText").textContent =
+        permission === "granted" ? "🔔 Notificaciones ON" : "🔕 Notificaciones OFF";
+    }
+
+    function sendBrowserNotification(title, body){
+      if(!("Notification" in window)) return;
+      if(Notification.permission !== "granted") return;
+      try{
+        new Notification(title, { body, icon: "" });
+      }catch(e){}
+    }
+
     function clasificar(sys, dia, pul, sintomas){
       const hasSymptoms = sintomas.length && !sintomas.includes("Sin síntomas");
 
@@ -546,7 +891,8 @@
           label:"🚨 URGENCIA",
           cls:"bad",
           msg:"Lectura extremadamente alta. Repetir en reposo y buscar atención médica.",
-          speak:"Atención. Lectura muy alta. Buscar ayuda médica."
+          speak:"Atención. Lectura muy alta. Buscar ayuda médica.",
+          risk:"crítico"
         };
       }
 
@@ -555,7 +901,8 @@
           label:"🔴 ALERTA",
           cls:"bad",
           msg:"Presión alta. Vigilar muy de cerca. Si se repite o hay síntomas, consultar médico.",
-          speak:"Alerta. La presión está alta. Vigilar y consultar si se repite."
+          speak:"Alerta. La presión está alta. Vigilar y consultar si se repite.",
+          risk:"alto"
         };
       }
 
@@ -564,7 +911,8 @@
           label:"🟠 PULSO BAJO",
           cls:"warn",
           msg:"Pulso bajo. Si hay mareo, debilidad o desmayo, consultar médico.",
-          speak:"Pulso bajo. Vigilar síntomas."
+          speak:"Pulso bajo. Vigilar síntomas.",
+          risk:"medio"
         };
       }
 
@@ -573,7 +921,8 @@
           label:"🟠 PRESIÓN BAJA",
           cls:"warn",
           msg:"La presión está baja. Vigilar mareo, debilidad o malestar.",
-          speak:"La presión está baja. Vigilar síntomas."
+          speak:"La presión está baja. Vigilar síntomas.",
+          risk:"medio"
         };
       }
 
@@ -582,7 +931,8 @@
           label:"🟡 VIGILAR",
           cls:"warn",
           msg:"La lectura está un poco fuera del rango cómodo. Conviene repetir en reposo.",
-          speak:"Lectura para vigilar. Repetir en reposo."
+          speak:"Lectura para vigilar. Repetir en reposo.",
+          risk:"moderado"
         };
       }
 
@@ -591,7 +941,8 @@
           label:"🟢 CONTROLADA",
           cls:"good",
           msg:"Lectura estable y razonable para una persona mayor con tratamiento.",
-          speak:"La lectura está controlada."
+          speak:"La lectura está controlada.",
+          risk:"bajo"
         };
       }
 
@@ -600,7 +951,8 @@
           label:"🟢 NORMAL",
           cls:"good",
           msg:"Todo en orden. La lectura luce bien.",
-          speak:"La lectura está normal."
+          speak:"La lectura está normal.",
+          risk:"bajo"
         };
       }
 
@@ -608,7 +960,8 @@
         label:"🔵 REVISAR",
         cls:"info",
         msg:"Lectura fuera del patrón habitual. Conviene observar el promedio.",
-        speak:"Lectura para revisar."
+        speak:"Lectura para revisar.",
+        risk:"pendiente"
       };
     }
 
@@ -623,6 +976,55 @@
       badge.textContent = result.label;
       reading.textContent = `${sys} / ${dia} / ${pul}`;
       msg.textContent = result.msg;
+    }
+
+    function processTrend(values){
+      if(values.length < 3) return "sin suficientes datos";
+      const last = values.slice(-3);
+      if(last[2] > last[1] && last[1] > last[0]) return "subiendo";
+      if(last[2] < last[1] && last[1] < last[0]) return "bajando";
+      return "estable";
+    }
+
+    function analizarPatrones(){
+      const data = getFilteredData().slice().reverse();
+      const aiSummary = document.getElementById("aiSummary");
+      const aiTrend = document.getElementById("aiTrend");
+      const aiRisk = document.getElementById("aiRisk");
+
+      if(data.length < 2){
+        aiSummary.textContent = "Aún no hay suficientes lecturas para detectar patrones.";
+        aiTrend.textContent = "Tendencia: pendiente.";
+        aiRisk.textContent = "Riesgo actual: pendiente.";
+        return;
+      }
+
+      const avg = key => data.reduce((a,b)=>a + Number(b[key] || 0), 0) / data.length;
+      const avgSys = avg("sys");
+      const avgDia = avg("dia");
+      const avgPul = avg("pul");
+
+      const trendSys = processTrend(data.map(x => x.sys));
+      const trendDia = processTrend(data.map(x => x.dia));
+      const last5 = data.slice(-5);
+      const highCount = last5.filter(x => x.sys >= 150 || x.dia >= 95).length;
+      const lowCount = last5.filter(x => x.sys < 95 || x.dia < 55 || x.pul < 50).length;
+
+      let summary = `Promedio actual: SYS ${avgSys.toFixed(1)}, DIA ${avgDia.toFixed(1)}, Pulso ${avgPul.toFixed(1)}.`;
+      let trend = `Tendencia SYS: ${trendSys}. Tendencia DIA: ${trendDia}.`;
+      let risk = "Riesgo actual: bajo.";
+
+      if(highCount >= 3){
+        risk = "Riesgo actual: alto. Varias lecturas recientes han salido elevadas.";
+      } else if(lowCount >= 2){
+        risk = "Riesgo actual: moderado. Hay varias lecturas recientes bajas o con pulso bajo.";
+      } else if(avgSys >= 141 || avgDia >= 86){
+        risk = "Riesgo actual: moderado. El promedio se está saliendo del rango cómodo.";
+      }
+
+      aiSummary.textContent = summary;
+      aiTrend.textContent = trend;
+      aiRisk.textContent = risk;
     }
 
     function procesarLectura(){
@@ -652,7 +1054,8 @@
         pul,
         sintomas: sintomas.join(", ") || "Sin síntomas",
         estado: result.label,
-        cls: result.cls
+        cls: result.cls,
+        risk: result.risk
       };
 
       const data = getData();
@@ -662,6 +1065,13 @@
 
       beep(result.cls);
       speak(`${persona}. ${result.speak}. Sistólica ${sys}. Diastólica ${dia}. Pulso ${pul}.`);
+
+      if(result.cls === "bad" || result.cls === "warn"){
+        sendBrowserNotification(
+          `Lectura ${result.label}`,
+          `${persona}: ${sys}/${dia}, pulso ${pul}. ${result.msg}`
+        );
+      }
 
       document.getElementById("sys").value = "";
       document.getElementById("dia").value = "";
@@ -721,43 +1131,61 @@
       const ctx = canvas.getContext("2d");
       const width = canvas.width;
       const height = canvas.height;
-      const pad = 40;
+      const pad = 50;
 
       ctx.clearRect(0,0,width,height);
 
-      const data = getFilteredData().slice(0,12).reverse();
+      const limit = Number(document.getElementById("limitGraph").value || 12);
+      const data = getFilteredData().slice(0, limit).reverse();
 
       ctx.fillStyle = "#0a1628";
       ctx.fillRect(0,0,width,height);
 
+      const chartTop = pad;
+      const chartBottom = height - pad;
+      const chartLeft = pad;
+      const chartRight = width - pad;
+      const chartHeight = chartBottom - chartTop;
+
+      // Bandas de fondo
+      function yFor(value, minVal, maxVal){
+        return chartTop + ((maxVal - value) / (maxVal - minVal)) * chartHeight;
+      }
+
+      const minVal = 30;
+      const maxVal = 220;
+
+      // Verde
+      ctx.fillStyle = "rgba(22,163,74,.10)";
+      ctx.fillRect(chartLeft, yFor(130, minVal, maxVal), chartRight-chartLeft, yFor(55, minVal, maxVal)-yFor(130, minVal, maxVal));
+      // Amarillo
+      ctx.fillStyle = "rgba(245,158,11,.08)";
+      ctx.fillRect(chartLeft, yFor(160, minVal, maxVal), chartRight-chartLeft, yFor(130, minVal, maxVal)-yFor(160, minVal, maxVal));
+      // Rojo
+      ctx.fillStyle = "rgba(239,68,68,.08)";
+      ctx.fillRect(chartLeft, yFor(220, minVal, maxVal), chartRight-chartLeft, yFor(160, minVal, maxVal)-yFor(220, minVal, maxVal));
+
+      // Grid
       ctx.strokeStyle = "rgba(255,255,255,.08)";
       ctx.lineWidth = 1;
-
-      for(let i=0;i<5;i++){
-        const y = pad + ((height - pad*2)/4) * i;
+      for(let i=0;i<6;i++){
+        const y = chartTop + (chartHeight/5)*i;
         ctx.beginPath();
-        ctx.moveTo(pad, y);
-        ctx.lineTo(width - pad, y);
+        ctx.moveTo(chartLeft, y);
+        ctx.lineTo(chartRight, y);
         ctx.stroke();
+
+        const val = Math.round(maxVal - ((maxVal-minVal)/5)*i);
+        ctx.fillStyle = "#9fc2ea";
+        ctx.font = "12px Arial";
+        ctx.fillText(val, 10, y+4);
       }
 
       if(!data.length){
         ctx.fillStyle = "#9fc2ea";
         ctx.font = "16px Arial";
-        ctx.fillText("Sin datos para graficar", pad, height/2);
+        ctx.fillText("Sin datos para graficar", chartLeft, height/2);
         return;
-      }
-
-      const allValues = data.flatMap(d => [d.sys, d.dia, d.pul]);
-      const minVal = Math.max(30, Math.min(...allValues) - 10);
-      const maxVal = Math.min(220, Math.max(...allValues) + 10);
-
-      ctx.fillStyle = "#9fc2ea";
-      ctx.font = "12px Arial";
-      for(let i=0;i<5;i++){
-        const val = Math.round(maxVal - ((maxVal-minVal)/4)*i);
-        const y = pad + ((height - pad*2)/4)*i + 4;
-        ctx.fillText(val, 8, y);
       }
 
       const drawSeries = (key, label, color) => {
@@ -766,15 +1194,15 @@
         ctx.beginPath();
 
         data.forEach((d, i) => {
-          const x = pad + (i * ((width - pad*2) / Math.max(1, data.length-1)));
-          const y = pad + ((maxVal - d[key]) / (maxVal - minVal)) * (height - pad*2);
+          const x = chartLeft + (i * ((chartRight-chartLeft) / Math.max(1, data.length-1)));
+          const y = yFor(d[key], minVal, maxVal);
           if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
         });
         ctx.stroke();
 
         data.forEach((d, i) => {
-          const x = pad + (i * ((width - pad*2) / Math.max(1, data.length-1)));
-          const y = pad + ((maxVal - d[key]) / (maxVal - minVal)) * (height - pad*2);
+          const x = chartLeft + (i * ((chartRight-chartLeft) / Math.max(1, data.length-1)));
+          const y = yFor(d[key], minVal, maxVal);
           ctx.fillStyle = color;
           ctx.beginPath();
           ctx.arc(x, y, 4, 0, Math.PI*2);
@@ -783,7 +1211,8 @@
 
         ctx.fillStyle = color;
         ctx.font = "13px Arial";
-        ctx.fillText(label, width - pad - 110, 20 + (label === "SYS" ? 0 : label === "DIA" ? 18 : 36));
+        const legendY = label === "SYS" ? 20 : label === "DIA" ? 40 : 60;
+        ctx.fillText(label, width - 110, legendY);
       };
 
       drawSeries("sys", "SYS", "#38bdf8");
@@ -793,32 +1222,22 @@
       ctx.fillStyle = "#9fc2ea";
       ctx.font = "12px Arial";
       data.forEach((d, i) => {
-        const x = pad + (i * ((width - pad*2) / Math.max(1, data.length-1)));
+        const x = chartLeft + (i * ((chartRight-chartLeft) / Math.max(1, data.length-1)));
         ctx.fillText(String(i+1), x-3, height-12);
       });
     }
 
-    function enviarWhatsApp(){
+    function notificarUltimaLectura(){
       const data = getData();
       if(!data.length){
         alert("No hay lecturas guardadas.");
         return;
       }
-
       const last = data[0];
-      const text =
-`Lectura de presión
-Persona: ${last.persona}
-Edad: ${last.edad || "-"}
-SYS: ${last.sys}
-DIA: ${last.dia}
-Pulso: ${last.pul}
-Síntomas: ${last.sintomas}
-Estado: ${last.estado}
-Fecha: ${last.fechaTexto}`;
-
-      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-      window.open(url, "_blank");
+      sendBrowserNotification(
+        `Última lectura: ${last.persona}`,
+        `${last.sys}/${last.dia}, pulso ${last.pul} - ${last.estado}`
+      );
     }
 
     function exportarJSON(){
@@ -829,6 +1248,30 @@ Fecha: ${last.fechaTexto}`;
       a.download = "techblue-pressure-care-data.json";
       a.click();
       URL.revokeObjectURL(a.href);
+    }
+
+    function importarJSON(){
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".json,application/json";
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try{
+            const imported = JSON.parse(reader.result);
+            if(!Array.isArray(imported)) throw new Error("Formato inválido");
+            setData(imported);
+            renderTodo();
+            alert("Datos importados.");
+          }catch(err){
+            alert("No se pudo importar ese JSON.");
+          }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
     }
 
     function borrarTodo(){
@@ -864,13 +1307,47 @@ Fecha: ${last.fechaTexto}`;
       symptomNone().checked = true;
     }
 
+    function emitSync(data){
+      try{
+        if(channel){
+          channel.postMessage({ type:"sync-data", payload:data });
+        }
+      }catch(e){}
+    }
+
+    function initSync(){
+      try{
+        channel = new BroadcastChannel(CHANNEL_NAME);
+        channel.onmessage = (event) => {
+          if(event.data?.type === "sync-data"){
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(event.data.payload || []));
+            renderTodo();
+          }
+        };
+      }catch(e){}
+
+      window.addEventListener("storage", (e) => {
+        if(e.key === STORAGE_KEY){
+          renderTodo();
+        }
+      });
+    }
+
     function renderTodo(){
       renderTabla();
       actualizarStats();
       drawChart();
+      analizarPatrones();
     }
 
+    initSecurity();
+    initSync();
     renderTodo();
+
+    if("Notification" in window){
+      document.getElementById("notifyBtnText").textContent =
+        Notification.permission === "granted" ? "🔔 Notificaciones ON" : "🔔 Notificaciones";
+    }
   </script>
 </body>
 </html>
